@@ -57,7 +57,8 @@ const channels = [
     replay: 'Creator-owned replay',
     sponsor: '2 premium bids',
     chat: 'Warm',
-    accent: '#c7ff2e',
+    accent: '#E5B95C',
+    accentText: '#050617',
   },
   {
     id: 'side-quest',
@@ -73,7 +74,8 @@ const channels = [
     replay: 'Member replay',
     sponsor: 'Controller drop',
     chat: 'Active',
-    accent: '#3b82f6',
+    accent: '#2447FF',
+    accentText: '#F8EEDC',
   },
   {
     id: 'green-room',
@@ -89,7 +91,8 @@ const channels = [
     replay: 'Editorial cut',
     sponsor: '1 studio partner',
     chat: 'Protected',
-    accent: '#ff4d2e',
+    accent: '#C1122F',
+    accentText: '#F8EEDC',
   },
   {
     id: 'lens-check',
@@ -105,7 +108,8 @@ const channels = [
     replay: 'Drop window',
     sponsor: 'Camera shop',
     chat: 'Clean',
-    accent: '#f2c94c',
+    accent: '#6D2AD8',
+    accentText: '#F8EEDC',
   },
   {
     id: 'block-party',
@@ -121,7 +125,8 @@ const channels = [
     replay: 'Event pass',
     sponsor: 'Local brand stack',
     chat: 'High energy',
-    accent: '#23cfa7',
+    accent: '#8B1E7A',
+    accentText: '#F8EEDC',
   },
 ];
 
@@ -132,10 +137,10 @@ const marketStats = [
 ];
 
 const walletLines = [
-  { label: 'Subscriptions', amount: '$8,920', color: '#c7ff2e', value: 8920 },
-  { label: 'Tips', amount: '$4,416', color: '#f2c94c', value: 4416 },
-  { label: 'Drops', amount: '$2,808', color: '#ff4d2e', value: 2808 },
-  { label: 'Ads', amount: '$1,612', color: '#3b82f6', value: 1612 },
+  { label: 'Subscriptions', amount: '$8,920', color: '#2447FF', value: 8920 },
+  { label: 'Tips', amount: '$4,416', color: '#E5B95C', value: 4416 },
+  { label: 'Drops', amount: '$2,808', color: '#C1122F', value: 2808 },
+  { label: 'Ads', amount: '$1,612', color: '#6D2AD8', value: 1612 },
 ];
 
 const revenueProducts = [
@@ -402,7 +407,10 @@ function App() {
             >
               <span className="thumb-wrap">
                 <img src={channel.image} alt={`${channel.title} channel preview`} />
-                <span className="category-chip" style={{ '--chip-color': channel.accent }}>
+                <span
+                  className="category-chip"
+                  style={{ '--chip-color': channel.accent, '--chip-text': channel.accentText }}
+                >
                   {channel.category}
                 </span>
               </span>

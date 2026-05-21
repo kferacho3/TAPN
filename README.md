@@ -42,11 +42,52 @@ high-impact decisions. Serious restrictions should move through:
 3. Graduated action such as warning, room limits, suspension, demonetization, or ban
 4. Appeal path with receipts and decision history
 
+## Palette Research
+
+The royal direction is anchored in three ideas:
+
+- **Imperial purple:** status, rarity, ceremony, and cultural authority
+- **Deep royal blue:** trust, institutional weight, broadcast polish, and stability
+- **Crown crimson:** urgency, power, live energy, and editorial heat
+
+Tapn should not look like a generic purple-blue tech product. The palette uses a
+near-black navy foundation, then lets blue, red, and purple operate as distinct
+signals. Gold is kept as a restrained premium accent for money, milestones, and
+programming tags.
+
+| Role | Hex | Use |
+| --- | --- | --- |
+| Obsidian Navy | `#050617` | App background and high-contrast foundation |
+| Royal Night | `#090D2A` | Hero surfaces and elevated dark panels |
+| Palace Blue | `#2447FF` | Primary actions, selected states, trust signals |
+| Imperial Purple | `#6D2AD8` | Premium status, verified trust, brand depth |
+| Crown Crimson | `#C1122F` | Live urgency, drops, alerts, and heat |
+| Crown Gold | `#E5B95C` | Wallet, prestige, milestones, and editorial labels |
+| Royal Parchment | `#F8EEDC` | Primary text on dark and jewel-tone surfaces |
+
+Accessibility guardrails:
+
+- Body text is parchment on navy/purple panels for strong contrast.
+- Blue, red, and purple badges use light text instead of dark text.
+- Gold uses dark text only when it becomes a filled surface.
+- Color is paired with icons, labels, chips, and state text instead of carrying
+  meaning by itself.
+
+Research inputs:
+
+- Smithsonian Color Journey on purple's historic association with royalty, faith,
+  prosperity, and expensive natural dyes
+- North Carolina Museum of Art learning material on red as power, danger,
+  leadership, and authority
+- ColorArchive's trust-color guide on navy/dark blue as an institutional trust
+  signal
+- W3C WCAG guidance for contrast and not relying on color alone
+
 ## Brand Direction
 
 - **Logo:** hard lowercase wordmark, compact play-button mark, broadcast signal
 - **Tone:** protected, profitable, live, editorial, premium, culturally fluent
-- **Visuals:** black foundation, cream typography, sharp lime/red/blue/gold signals
+- **Visuals:** obsidian navy foundation, royal blue, imperial purple, crown crimson, parchment text, restrained gold
 - **Slogans:** `Tap in. Go live. Get paid.`, `Culture on live.`, `Built for the stream and the stage.`
 - **Audience:** Black creators, fans, hosts, gamers, artists, podcasters, producers, venues, labels, and brands
 
