@@ -98,10 +98,15 @@ The current React prototype includes:
 - Hero command center with featured stream state
 - Category-filtered live channel grid
 - Creator wallet simulation
+- YouTube-style community feed with polls, posts, clips, and house rooms
+- Creator Studio surface with mock metrics, publishing queue, and API status
+- Monetization ladder for tips, memberships, replay windows, and brand market
 - Studio setup and heat-index panels
 - Monetization product suite
 - Safety desk and review workflow
 - Programming slate and launch roadmap
+- Local mock backend API for discovery, community reactions, chat, follows, tips,
+  subscriptions, creator studio, monetization, and promotion guidance
 
 ## Development
 
@@ -110,19 +115,51 @@ npm install
 npm run dev
 ```
 
+Run the mock API in a second terminal:
+
+```bash
+npm run api
+```
+
+Or run the API and Vite together:
+
+```bash
+npm run dev:full
+```
+
 Build the production bundle:
 
 ```bash
 npm run build
 ```
 
+Mock API routes:
+
+```text
+GET  /api/health
+GET  /api/discover
+GET  /api/community
+GET  /api/creator-studio
+GET  /api/monetization
+GET  /api/promotion-plan
+POST /api/community/:id/react
+POST /api/channels/:slug/follow
+POST /api/channels/:slug/chat
+POST /api/channels/:slug/tip
+POST /api/channels/:slug/subscribe
+```
+
 ## Project Structure
 
 ```text
-src/App.jsx        Product interface and state
+src/App.jsx        Product routes, UI, and API-backed interactions
+src/apiClient.js   Browser API helper
+src/data.js        Shared dummy product/content data
 src/styles.css     Tapn visual system and responsive layout
+server/index.js    Local Node mock API
+server/dev.js      Runs API and Vite together
 public/assets/     Prototype imagery
-vite.config.js     Vite React configuration
+vite.config.js     Vite React configuration and API proxy
 ```
 
 ## Image Credits

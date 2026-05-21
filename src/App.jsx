@@ -43,15 +43,20 @@ import {
 import {
   categories,
   channels,
+  communityPosts,
+  creatorStudio,
   faqs,
   footerGroups,
   legalDocs,
   marketStats,
+  monetizationProgram,
+  promotionPlaybook,
   publicPages,
   revenueProducts,
   supportTopics,
   walletLines,
 } from './data';
+import { getJson, postJson } from './apiClient';
 
 const categoryBySlug = Object.fromEntries(categories.map((category) => [category.slug, category]));
 const channelBySlug = Object.fromEntries(channels.map((channel) => [channel.slug, channel]));
@@ -59,8 +64,9 @@ const defaultChannel = channels[0];
 
 const primaryNav = [
   ['Browse', '/browse'],
-  ['Streamers', '/streamers'],
-  ['Developers', '/developers'],
+  ['Community', '/community'],
+  ['Studio', '/studio'],
+  ['Money', '/monetization'],
   ['Support', '/support'],
 ];
 
@@ -109,6 +115,59 @@ function useClientRoute() {
   }
 
   return { location, navigate };
+}
+
+function useApiData() {
+  const [apiData, setApiData] = useState({
+    status: 'checking',
+    health: null,
+    discover: null,
+    community: { posts: communityPosts },
+    creatorStudio,
+    monetization: monetizationProgram,
+    promotion: promotionPlaybook,
+  });
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function load() {
+      try {
+        const [health, discover, community, studio, monetization, promotion] = await Promise.all([
+          getJson('/api/health'),
+          getJson('/api/discover'),
+          getJson('/api/community'),
+          getJson('/api/creator-studio'),
+          getJson('/api/monetization'),
+          getJson('/api/promotion-plan'),
+        ]);
+
+        if (!cancelled) {
+          setApiData({
+            status: 'online',
+            health,
+            discover,
+            community,
+            creatorStudio: studio,
+            monetization,
+            promotion,
+          });
+        }
+      } catch {
+        if (!cancelled) {
+          setApiData((current) => ({ ...current, status: 'offline' }));
+        }
+      }
+    }
+
+    load();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  return apiData;
 }
 
 function RouteLink({ to, navigate, className = '', children, onClick, ...props }) {
@@ -218,6 +277,7 @@ function Footer({ navigate }) {
 
 function App() {
   const { location, navigate } = useClientRoute();
+  const apiData = useApiData();
   const [walletTotal, setWalletTotal] = useState(28418);
   const [activeBrowse, setActiveBrowse] = useState('all');
   const [selectedChannelSlug, setSelectedChannelSlug] = useState(defaultChannel.slug);
@@ -236,10 +296,12 @@ function App() {
     setFollowed((current) =>
       current.includes(slug) ? current.filter((item) => item !== slug) : [...current, slug],
     );
+    postJson(`/api/channels/${slug}/follow`).catch(() => {});
   }
 
   const pageProps = {
     navigate,
+    apiData,
     walletTotal,
     setWalletTotal,
     activeBrowse,
@@ -268,6 +330,9 @@ function PageRouter({ route, ...props }) {
 
   if (path === '/') return <HomePage {...props} />;
   if (path === '/browse') return <BrowsePage {...props} />;
+  if (path === '/community') return <CommunityPage {...props} />;
+  if (path === '/studio') return <CreatorStudioPage {...props} />;
+  if (path === '/monetization') return <MonetizationPage {...props} />;
   if (path === '/search') return <SearchPage {...props} query={searchParams.get('q') ?? ''} />;
   if (path.startsWith('/category/')) {
     return <CategoryPage {...props} slug={path.replace('/category/', '')} />;
@@ -286,6 +351,7 @@ function PageRouter({ route, ...props }) {
 
 function HomePage({
   navigate,
+  apiData,
   walletTotal,
   setWalletTotal,
   selectedChannel,
@@ -314,7 +380,7 @@ function HomePage({
             <Flame size={18} />
             Heat Index
           </RouteLink>
-          <RouteLink to="/streamers" navigate={navigate} className="rail-item">
+          <RouteLink to="/monetization" navigate={navigate} className="rail-item">
             <Wallet size={18} />
             Wallet
           </RouteLink>
@@ -333,9 +399,9 @@ function HomePage({
           </p>
 
           <div className="hero-actions">
-            <RouteLink to="/streamers" navigate={navigate} className="primary-button">
+            <RouteLink to="/studio" navigate={navigate} className="primary-button">
               <Radio size={18} />
-              Start Channel
+              Creator Studio
             </RouteLink>
             <button className="secondary-button" type="button" onClick={() => setReviewOpen((open) => !open)}>
               <ShieldCheck size={18} />
@@ -351,6 +417,7 @@ function HomePage({
               </div>
             ))}
           </div>
+          <BackendStatus apiData={apiData} />
         </section>
 
         <FeaturedStage
@@ -412,6 +479,8 @@ function HomePage({
         onFeature={setSelectedChannelSlug}
         selectedSlug={selectedChannel.slug}
       />
+
+      <CommunityPreview navigate={navigate} posts={apiData.community.posts} />
 
       <section className="studio-band" id="studio">
         <div className="studio-copy">
@@ -490,6 +559,41 @@ function HomePage({
   );
 }
 
+function BackendStatus({ apiData }) {
+  return (
+    <div className={apiData.status === 'online' ? 'backend-status online' : 'backend-status'}>
+      <span>{apiData.status === 'online' ? 'API online' : 'API fallback'}</span>
+      <strong>{apiData.status === 'online' ? apiData.health.service : 'Bundled dummy data'}</strong>
+    </div>
+  );
+}
+
+function CommunityPreview({ navigate, posts }) {
+  return (
+    <section className="community-preview">
+      <div className="section-split">
+        <SectionTitle eyebrow="TAPN Community" title="The YouTube community tab, tuned for live rooms." />
+        <RouteLink to="/community" navigate={navigate} className="secondary-button">
+          Open community
+          <ChevronRight size={18} />
+        </RouteLink>
+      </div>
+      <div className="community-preview-grid">
+        {posts.slice(0, 3).map((post) => (
+          <article key={post.id}>
+            <img src={post.image} alt="" />
+            <div>
+              <span>{post.creator}</span>
+              <h3>{post.title}</h3>
+              <p>{post.body}</p>
+            </div>
+          </article>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 function FeaturedStage({ channel, navigate }) {
   return (
     <section className="stage-panel" id="live" aria-label="Featured live stream">
@@ -534,6 +638,7 @@ function FeaturedStage({ channel, navigate }) {
 
 function BrowsePage({
   navigate,
+  apiData,
   activeBrowse,
   setActiveBrowse,
   selectedChannel,
@@ -541,8 +646,9 @@ function BrowsePage({
   followed,
   toggleFollow,
 }) {
+  const sourceChannels = apiData.discover?.channels ?? channels;
   const visibleChannels =
-    activeBrowse === 'all' ? channels : channels.filter((channel) => channel.category === activeBrowse);
+    activeBrowse === 'all' ? sourceChannels : sourceChannels.filter((channel) => channel.category === activeBrowse);
 
   return (
     <section className="browse-shell">
@@ -561,7 +667,7 @@ function BrowsePage({
               <RouteLink to={`/channel/${selectedChannel.slug}`} navigate={navigate} className="primary-button">
                 Watch featured
               </RouteLink>
-              <RouteLink to="/streamers" navigate={navigate} className="secondary-button">
+              <RouteLink to="/studio" navigate={navigate} className="secondary-button">
                 Start streaming
               </RouteLink>
             </div>
@@ -685,6 +791,7 @@ function ChannelPage({ navigate, slug, followed, toggleFollow, setWalletTotal })
     const next = draft.trim();
     if (!next) return;
     setMessages((current) => [...current, ['You', next]]);
+    postJson(`/api/channels/${channel.slug}/chat`, { user: 'You', message: next }).catch(() => {});
     setDraft('');
   }
 
@@ -726,9 +833,24 @@ function ChannelPage({ navigate, slug, followed, toggleFollow, setWalletTotal })
               <Heart size={16} fill={followed.includes(channel.slug) ? 'currentColor' : 'none'} />
               {followed.includes(channel.slug) ? 'Following' : 'Follow'}
             </button>
-            <button className="primary-button" type="button" onClick={() => setWalletTotal((total) => total + 25)}>
+            <button
+              className="primary-button"
+              type="button"
+              onClick={() => {
+                setWalletTotal((total) => total + 25);
+                postJson(`/api/channels/${channel.slug}/tip`, { amount: 25 }).catch(() => {});
+              }}
+            >
               <HandCoins size={17} />
               Tip $25
+            </button>
+            <button
+              className="secondary-button"
+              type="button"
+              onClick={() => postJson(`/api/channels/${channel.slug}/subscribe`).catch(() => {})}
+            >
+              <Ticket size={17} />
+              Join $5
             </button>
           </div>
         </div>
@@ -779,6 +901,249 @@ function ChannelPage({ navigate, slug, followed, toggleFollow, setWalletTotal })
         <ChevronRight size={17} />
         More in {category.name}
       </RouteLink>
+    </section>
+  );
+}
+
+function CommunityPage({ navigate, apiData }) {
+  const [posts, setPosts] = useState(apiData.community.posts);
+
+  useEffect(() => {
+    setPosts(apiData.community.posts);
+  }, [apiData.community.posts]);
+
+  function reactToPost(postId) {
+    setPosts((current) =>
+      current.map((post) => (post.id === postId ? { ...post, likes: post.likes + 1 } : post)),
+    );
+    postJson(`/api/community/${postId}/react`).catch(() => {});
+  }
+
+  return (
+    <section className="youtube-community-shell">
+      <aside className="community-sidebar">
+        <RouteLink to="/browse" navigate={navigate}>
+          <Home size={18} />
+          Home feed
+        </RouteLink>
+        <RouteLink to="/community" navigate={navigate} className="active">
+          <MessageCircle size={18} />
+          Community
+        </RouteLink>
+        <RouteLink to="/studio" navigate={navigate}>
+          <MonitorPlay size={18} />
+          Studio
+        </RouteLink>
+        <RouteLink to="/monetization" navigate={navigate}>
+          <Wallet size={18} />
+          Monetization
+        </RouteLink>
+      </aside>
+
+      <div className="community-feed">
+        <div className="community-hero">
+          <p className="eyebrow">Community home</p>
+          <h1>Build the room before the stream starts.</h1>
+          <p>
+            TAPN should borrow YouTube's habit loop: posts, polls, clips, premieres, comments, and subscriptions keep
+            fans warm between live moments while Discord-style rooms make fans feel known.
+          </p>
+          <BackendStatus apiData={apiData} />
+        </div>
+
+        <div className="post-composer">
+          <div className="avatar">TP</div>
+          <div>
+            <strong>Post to TAPN Community</strong>
+            <span>Poll, clip, replay drop, member update, or sponsor note.</span>
+          </div>
+          <button type="button">Draft post</button>
+        </div>
+
+        {posts.map((post) => {
+          const channel = channelBySlug[post.channelSlug] ?? defaultChannel;
+          return (
+            <article className="community-post" key={post.id}>
+              <div className="post-header">
+                <div className="avatar">{post.avatar}</div>
+                <div>
+                  <strong>{post.creator}</strong>
+                  <span>{post.posted} / {post.type}</span>
+                </div>
+              </div>
+              <h2>{post.title}</h2>
+              <p>{post.body}</p>
+              <img src={post.image} alt="" />
+              {post.options && (
+                <div className="poll-stack">
+                  {post.options.map(([label, value]) => (
+                    <div key={label}>
+                      <span>{label}</span>
+                      <meter min="0" max="100" value={value} />
+                      <strong>{value}%</strong>
+                    </div>
+                  ))}
+                </div>
+              )}
+              <div className="chip-row">
+                {post.tags.map((tag) => (
+                  <span key={tag}>{tag}</span>
+                ))}
+              </div>
+              <div className="post-actions">
+                <button type="button" onClick={() => reactToPost(post.id)}>
+                  <Heart size={16} />
+                  {post.likes.toLocaleString()}
+                </button>
+                <RouteLink to={`/channel/${channel.slug}`} navigate={navigate}>
+                  <Play size={16} />
+                  Watch room
+                </RouteLink>
+                <span>{post.comments} comments</span>
+              </div>
+            </article>
+          );
+        })}
+      </div>
+
+      <aside className="community-rooms">
+        <h2>House rooms</h2>
+        {categories.map((category) => (
+          <RouteLink key={category.slug} to={`/category/${category.slug}`} navigate={navigate}>
+            <span style={{ background: category.accent, color: category.accentText }}>{category.short.slice(0, 2)}</span>
+            <div>
+              <strong>{category.name} House</strong>
+              <small>{category.stats[0]}</small>
+            </div>
+          </RouteLink>
+        ))}
+      </aside>
+    </section>
+  );
+}
+
+function CreatorStudioPage({ apiData, navigate }) {
+  const studio = apiData.creatorStudio;
+  const maxRevenue = Math.max(...studio.revenue.map(([, value]) => value));
+
+  return (
+    <section className="studio-page">
+      <div className="studio-hero-panel">
+        <div>
+          <p className="eyebrow">Creator Studio</p>
+          <h1>{studio.headline}</h1>
+          <p>
+            A backend-aware dashboard for uploads, community posts, live setup, wallet visibility, sponsor readiness,
+            and replay packaging. It is dummy data today; the API shape is ready for real services later.
+          </p>
+          <div className="hero-actions">
+            <RouteLink to="/community" navigate={navigate} className="primary-button">
+              Community feed
+            </RouteLink>
+            <RouteLink to="/monetization" navigate={navigate} className="secondary-button">
+              Monetization ladder
+            </RouteLink>
+          </div>
+        </div>
+        <BackendStatus apiData={apiData} />
+      </div>
+
+      <div className="studio-metrics">
+        {studio.metrics.map(([label, value, delta]) => (
+          <article key={label}>
+            <span>{label}</span>
+            <strong>{value}</strong>
+            <small>{delta}</small>
+          </article>
+        ))}
+      </div>
+
+      <div className="studio-ops-grid">
+        <section className="studio-queue">
+          <h2>Publishing queue</h2>
+          {studio.queue.map(([type, title, status]) => (
+            <div key={`${type}-${title}`}>
+              <span>{type}</span>
+              <strong>{title}</strong>
+              <em>{status}</em>
+            </div>
+          ))}
+        </section>
+
+        <section className="studio-revenue">
+          <h2>Revenue mix</h2>
+          {studio.revenue.map(([label, value]) => (
+            <div key={label}>
+              <span>{label}</span>
+              <meter min="0" max={maxRevenue} value={value} />
+              <strong>${value.toLocaleString()}</strong>
+            </div>
+          ))}
+        </section>
+
+        <section className="studio-api-panel">
+          <h2>Mock backend endpoints</h2>
+          {studio.backendEndpoints.map((endpoint) => (
+            <code key={endpoint}>{endpoint}</code>
+          ))}
+        </section>
+      </div>
+    </section>
+  );
+}
+
+function MonetizationPage({ apiData, navigate }) {
+  const program = apiData.monetization;
+
+  return (
+    <section className="money-page">
+      <div className="money-hero">
+        <p className="eyebrow">Monetization</p>
+        <h1>Give streamers a path from attention to ownership.</h1>
+        <p>{program.thesis}</p>
+        <div className="hero-actions">
+          <RouteLink to="/studio" navigate={navigate} className="primary-button">
+            Open studio
+          </RouteLink>
+          <RouteLink to="/streamers" navigate={navigate} className="secondary-button">
+            Creator program
+          </RouteLink>
+        </div>
+      </div>
+
+      <section className="split-grid">
+        {program.splits.map(([label, split, detail]) => (
+          <article key={label}>
+            <Wallet size={22} />
+            <span>{split}</span>
+            <h2>{label}</h2>
+            <p>{detail}</p>
+          </article>
+        ))}
+      </section>
+
+      <section className="ladder-section">
+        <SectionTitle eyebrow="Creator ladder" title="How a streamer gets monetized on TAPN." />
+        <div>
+          {program.levels.map(([level, requirement, unlock], index) => (
+            <article key={level}>
+              <span>{String(index + 1).padStart(2, '0')}</span>
+              <h2>{level}</h2>
+              <p>{requirement}</p>
+              <strong>{unlock}</strong>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="incentive-panel">
+        <SectionTitle eyebrow="Why creators move" title="Early reasons to choose TAPN over staying everywhere else." />
+        <div>
+          {program.incentives.map((item) => (
+            <p key={item}>{item}</p>
+          ))}
+        </div>
+      </section>
     </section>
   );
 }

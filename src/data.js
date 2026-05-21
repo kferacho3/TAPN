@@ -305,6 +305,147 @@ export const revenueProducts = [
   ['Brand Market', 'Sponsors buy culture safely through trust scores and verified inventory.'],
 ];
 
+export const communityPosts = [
+  {
+    id: 'post-cypher-rollcall',
+    channelSlug: 'late-night-atl-cypher',
+    creator: 'Ari Lennox Ave',
+    avatar: 'AA',
+    type: 'poll',
+    title: 'Tonight should the cypher end with a producer battle or a freestyle relay?',
+    body:
+      'Members pick the closer. Producer battle keeps the stage hot, freestyle relay lets more people touch the mic.',
+    image: '/assets/live-stage.jpg',
+    options: [
+      ['Producer battle', 64],
+      ['Freestyle relay', 36],
+    ],
+    likes: 842,
+    comments: 128,
+    posted: '18 min ago',
+    tags: ['members vote', 'music', 'live tonight'],
+  },
+  {
+    id: 'post-green-room-guest',
+    channelSlug: 'the-green-room',
+    creator: 'Zora Speaks',
+    avatar: 'ZS',
+    type: 'clip',
+    title: 'Question queue is open for The Green Room.',
+    body:
+      'Drop questions for tonight’s founder roundtable. We are clipping the best audience questions into the replay chapter.',
+    image: '/assets/podcast-studio.jpg',
+    likes: 528,
+    comments: 74,
+    posted: '42 min ago',
+    tags: ['questions', 'shows', 'replay chapter'],
+  },
+  {
+    id: 'post-nia-city-map',
+    channelSlug: 'block-party-replay',
+    creator: 'Nia North',
+    avatar: 'NN',
+    type: 'update',
+    title: 'New Orleans room map is live, with safety delay on.',
+    body:
+      'We are keeping exact location signals delayed while fans vote on the next food vendor and stage cam.',
+    image: '/assets/concert-crowd.jpg',
+    likes: 1160,
+    comments: 203,
+    posted: '1 hr ago',
+    tags: ['irl', 'location safety', 'city room'],
+  },
+  {
+    id: 'post-killaframe-shotlist',
+    channelSlug: 'lens-check-live',
+    creator: 'KillaFrame',
+    avatar: 'KF',
+    type: 'behind the scenes',
+    title: 'Lens Check members get the shot list before the premiere.',
+    body:
+      'Vote on the cold open and I will show the lighting diagram after the watch party hits 2K replays.',
+    image: '/assets/creator-camera.jpg',
+    likes: 403,
+    comments: 51,
+    posted: '2 hr ago',
+    tags: ['video', 'members', 'watch party'],
+  },
+];
+
+export const creatorStudio = {
+  creator: 'Ari Lennox Ave',
+  channelSlug: 'late-night-atl-cypher',
+  headline: 'A YouTube-style creator studio for live culture.',
+  apiMode: 'Local mock API',
+  metrics: [
+    ['Views', '1.84M', '+18%'],
+    ['Watch hours', '92.4K', '+11%'],
+    ['Members', '12.8K', '+23%'],
+    ['Paid replays', '4,612', '+31%'],
+  ],
+  queue: [
+    ['Tonight stream', 'Late Night ATL Cypher', 'Ready'],
+    ['Community post', 'Poll closes in 38 min', 'Live'],
+    ['Replay chapter', 'Hook battle clean cut', 'Needs review'],
+    ['Sponsor window', 'Blue Bottle studio read', 'Eligible'],
+  ],
+  revenue: [
+    ['Memberships', 8920],
+    ['Tips and drops', 4416],
+    ['Replay windows', 2808],
+    ['Brand reads', 1612],
+  ],
+  backendEndpoints: [
+    'GET /api/discover',
+    'GET /api/community',
+    'POST /api/channels/:slug/chat',
+    'POST /api/channels/:slug/tip',
+    'POST /api/channels/:slug/subscribe',
+    'GET /api/creator-studio',
+    'GET /api/monetization',
+  ],
+};
+
+export const monetizationProgram = {
+  thesis:
+    'TAPN should beat YouTube for cultural ownership and beat Kick for trust: creators get clear money rails, fans get reasons to join, brands get safer inventory.',
+  splits: [
+    ['Members + channel passes', '90/10 creator split target', 'Predictable monthly support and event room access.'],
+    ['Tips + gifts', '95/5 creator split target', 'Fast fan support with receipts and fraud review.'],
+    ['Replay windows', '85/15 creator split target', 'Paid VOD chapters, premieres, classes, and event replays.'],
+    ['Brand market', '80/20 creator split target', 'Sponsor reads, room takeovers, category bounties, and verified drops.'],
+  ],
+  levels: [
+    ['Open Creator', 'Verify identity, publish channel, complete safety onboarding.', 'Tips, free posts, public live rooms.'],
+    ['Paid Creator', '5 stream hours, 75 followers, clean payout account, 90+ trust score.', 'Channel passes, memberships, replay sales.'],
+    ['TAPN Partner', '1,500 followers, 40 average viewers, 12 live days, policy record in good standing.', 'Brand market, homepage placement, higher replay limits.'],
+    ['House Anchor', 'Invite/application for proven formats and city/community leadership.', 'Guaranteed programming budget, co-produced originals, sponsor packages.'],
+  ],
+  incentives: [
+    'Founding 100: first 100 accepted creators receive 90 days of 0% platform fee on memberships.',
+    'Format Grants: monthly cash pool for recurring shows, tournaments, cyphers, classes, and city rooms.',
+    'Replay Bounties: bonus payments for creators who package clean replay chapters that drive paid watch time.',
+    'Community Proof: partner review weights comments, posts, retention, and member renewals, not only raw live viewers.',
+  ],
+};
+
+export const promotionPlaybook = {
+  positioning:
+    'Do not pitch TAPN as another Twitch or Kick. Pitch it as the YouTube Community tab, Discord server, and live show wallet in one culturally fluent room.',
+  audiences: [
+    ['Creators with communities but weak monetization', 'Podcasters, YouTubers, DJs, educators, gamers, stylists, hosts, and local event operators.'],
+    ['Fans who already gather in Discord', 'Give them posts, polls, live chat, replays, and paid access without needing five disconnected links.'],
+    ['Brands that want culture without chaos', 'Sell verified rooms, sponsor windows, and trust receipts instead of generic impressions.'],
+  ],
+  launchMoves: [
+    'Recruit 25 anchor creators with repeatable formats, not one-off streams.',
+    'Run a Founding Rooms calendar for 30 days: one music room, one gaming bracket, one talk show, one IRL city room every week.',
+    'Clip every live moment into vertical shorts that send viewers to the next scheduled room.',
+    'Give every creator a TAPN Community post prompt before and after each stream.',
+    'Publish transparent creator earnings case studies as soon as there is real payout data.',
+  ],
+};
+
 export const publicPages = {
   about: {
     label: 'About',
@@ -372,8 +513,8 @@ export const publicPages = {
     title: 'Stream. Own. Earn.',
     body:
       'A creator landing page for artists, gamers, hosts, filmmakers, podcasters, and IRL operators who need money, audience, and protection in one place.',
-    cta: 'Start a channel',
-    ctaTo: '/channel/late-night-atl-cypher',
+    cta: 'Open creator studio',
+    ctaTo: '/studio',
     stats: ['Passes', 'Drops', 'Tips', 'Replays'],
     panels: [
       ['Start a room', 'Pick a lane, set chat mode, choose replay rights, and publish with a clear trust posture.'],
@@ -534,6 +675,9 @@ export const footerGroups = [
   {
     title: 'Resources',
     links: [
+      ['Community', '/community'],
+      ['Creator Studio', '/studio'],
+      ['Monetization', '/monetization'],
       ['Help and Support', '/support'],
       ['TAPN Streamers', '/streamers'],
       ['TAPN Developers', '/developers'],
